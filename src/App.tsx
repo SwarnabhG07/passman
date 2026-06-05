@@ -1,15 +1,14 @@
 import './App.css'
 import imgbg from '@/assets/imgbg.jpeg'
 import { useState } from 'react'
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
 
 type Site = {
   id: number;
   name: string;
   username: string;
 };
-
-
-
 
 import {
   Card,
@@ -23,10 +22,10 @@ import {
 
 function App() {
   const [sites, setsites] = useState([
-  { id: 1, name: 'Airtable', username: 'ryan@example.com' },
-  { id: 2, name: 'Airbnb', username: 'ryan@example.com' }
-]);
-const [selectedSite, setSelectedSite] = useState<Site | null>(null);
+    { id: 1, name: 'Airtable', username: 'ryan@example.com' },
+    { id: 2, name: 'Airbnb', username: 'ryan@example.com' }
+  ]);
+  const [selectedSite, setSelectedSite] = useState<Site | null>(null);
 
   return (
     <>
@@ -60,7 +59,77 @@ const [selectedSite, setSelectedSite] = useState<Site | null>(null);
                   </div>
                 ))}
               </div>
-              <div className='right '></div>
+              {selectedSite && (
+                <div className="w-[45%] h-fit bg-white/50 backdrop-blur-md rounded-xl p-4 relative flex flex-col shadow-inner border border-white/40 animate-in slide-in-from-right-4 duration-300 overflow-y-auto hide-scrollbar">
+
+                  <button
+                    onClick={() => setSelectedSite(null)}
+                    className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-gray-900/5 hover:bg-gray-900/10 text-gray-600 transition-colors"
+                  >
+                    ✕
+                  </button>
+
+                  <div className="mt-1 flex flex-col items-center text-center mb-4">
+                    <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center text-2xl mb-2 shadow-sm border border-gray-100">
+                      🌍
+                    </div>
+                    <h2 className="text-xl font-bold text-gray-900">
+                      {selectedSite.name}
+                    </h2>
+                  </div>
+
+                  {/* Form Area - Tighter Gaps and Inputs */}
+                  <div className="flex flex-col gap-3 w-full pb-1">
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider pl-1">
+                        Website URL
+                      </label>
+                      <Input
+                        defaultValue={`https://${selectedSite.name.toLowerCase()}.com`}
+                        className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm h-9 text-sm"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider pl-1">
+                        Username
+                      </label>
+                      <Input
+                        defaultValue={selectedSite.username}
+                        className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm h-9 text-sm"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider pl-1">
+                        Password
+                      </label>
+                      <Input
+                        type="password"
+                        defaultValue="hiddenpassword123"
+                        className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm text-lg tracking-widest h-9"
+                      />
+                    </div>
+
+                    {/* Action Buttons - Swapped to size="sm" */}
+                    <div className="mt-2 flex justify-end gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setSelectedSite(null)}
+                        className="text-gray-600 hover:bg-gray-900/5"
+                      >
+                        Cancel
+                      </Button>
+                      <Button size="sm" className="bg-gray-900 text-white hover:bg-gray-800 shadow-md">
+                        Save
+                      </Button>
+                    </div>
+
+                  </div>
+                </div>
+              )}
             </CardContent>
 
             {/* <CardFooter className="border-t border-white/40 pt-4">
