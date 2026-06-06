@@ -38,16 +38,31 @@ function App() {
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div>
-                  <CardTitle className="text-2xl text-gray-900">Card Title</CardTitle>
-                  <CardDescription className="text-gray-800">Card Description</CardDescription>
+                  <CardTitle className="text-2xl text-gray-900">All Keys</CardTitle>
+                  <CardDescription className="text-gray-800">128</CardDescription>
                 </div>
+
                 <CardAction>Card Action</CardAction>
+
               </div>
+
             </CardHeader>
 
-            <CardContent className="grow flex flex-row w-full h-full p-4 gap-4 overflow-hidden">
+
+            <CardContent className="grow flex flex-row w-full h-full gap-3 overflow-hidden">
+
               <div className={`flex flex-col h-full overflow-y-auto transition-all duration-500 ease-in-out pr-2 ${selectedSite ? 'w-[55%]' : 'w-full'
+
                 }`}>
+                <div className="flex justify-end mb-2 shrink-0 pr-1">
+                  <Button
+                    size="icon"
+                    className="rounded-full bg-gray-900 text-white hover:bg-gray-800 shadow-sm h-8 w-8 text-lg font-light pb-0.5"
+                  >
+                    +
+                  </Button>
+                </div>
+
                 {sites.map((site) => (
                   <div
                     key={site.id}
