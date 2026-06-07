@@ -20,6 +20,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
+
 function App() {
   const [sites, setsites] = useState([
     { id: 1, name: 'Airtable', username: 'ryan@example.com' },
@@ -128,7 +129,11 @@ function App() {
                     </div>
 
                     {/* Action Buttons - Swapped to size="sm" */}
+                    <div>
+                      <Button variant="destructive" className='translate-y-13' >Delete</Button>
+                    </div>
                     <div className="mt-2 flex justify-end gap-2">
+                      
                       <Button
                         variant="ghost"
                         size="sm"
