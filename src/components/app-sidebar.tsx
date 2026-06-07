@@ -1,4 +1,3 @@
-import * as React from "react"
 import { 
   Key, 
   Globe, 
@@ -11,9 +10,7 @@ import {
   Trash2, 
   Lock, 
   Search,
-  LogOut,
-  ChevronUp,
-  UserCheck
+  LogOut
 } from "lucide-react"
 
 import {

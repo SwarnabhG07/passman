@@ -3,14 +3,6 @@ import imgbg from '@/assets/imgbg.jpeg'
 import { useState } from 'react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Field, FieldGroup } from "@/components/ui/field"
-import { Label } from "@/components/ui/label"
-
-type Site = {
-  id: number;
-  name: string;
-  username: string;
-};
 import {
   Dialog,
   DialogClose,
@@ -21,20 +13,23 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-
 import {
   Card,
   CardAction,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
 
+type Site = {
+  id: number;
+  name: string;
+  username: string;
+};
 
 function App() {
-  const [sites, setsites] = useState([
+  const [sites] = useState([
     { id: 1, name: 'Airtable', username: 'ryan@example.com' },
     { id: 2, name: 'Airbnb', username: 'ryan@example.com' }
   ]);
@@ -57,19 +52,13 @@ function App() {
                   <CardTitle className="text-2xl text-gray-900">All Keys</CardTitle>
                   <CardDescription className="text-gray-800">128</CardDescription>
                 </div>
-
                 <CardAction>Card Action</CardAction>
-
               </div>
-
             </CardHeader>
-
 
             <CardContent className="grow flex flex-row w-full h-full gap-3 overflow-hidden">
 
-              <div className={`flex flex-col h-full overflow-y-auto transition-all duration-500 ease-in-out pr-2 ${selectedSite ? 'w-[55%]' : 'w-full'
-
-                }`}>
+              <div className={`flex flex-col h-full overflow-y-auto transition-all duration-500 ease-in-out pr-2 ${selectedSite ? 'w-[55%]' : 'w-full'}`}>
                 <div className="flex justify-end mb-2 shrink-0 pr-1">
                   <Button
                     size="icon"
@@ -90,6 +79,7 @@ function App() {
                   </div>
                 ))}
               </div>
+
               {selectedSite && (
                 <div className="w-[45%] h-fit bg-white/50 backdrop-blur-md rounded-xl p-4 relative flex flex-col shadow-inner border border-white/40 animate-in slide-in-from-right-4 duration-300 overflow-y-auto hide-scrollbar">
 
@@ -109,7 +99,7 @@ function App() {
                     </h2>
                   </div>
 
-                  {/* Form Area - Tighter Gaps and Inputs */}
+                  {/* Form Area */}
                   <div className="flex flex-col gap-3 w-full pb-1">
 
                     <div className="space-y-1">
@@ -143,81 +133,101 @@ function App() {
                       />
                     </div>
 
-                    {/* Action Buttons Container - Pinned to Bottom */}
+                    {/* Fixed Action Buttons Container */}
                     <div className="mt-auto pt-6 flex justify-between items-center w-full">
 
-                      {/* Action Buttons Container - Pinned to Bottom */}
-                      <div className="mt-auto pt-6 flex justify-between items-center w-full">
-
-                        {/* The Delete Button using standard Dialog */}
-                        <Dialog>
-                          <DialogTrigger asChild>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              className="text-red-600 bg-red-500/10 hover:bg-red-500/20 hover:text-red-700"
-                            >
-                              Delete
-                            </Button>
-                          </DialogTrigger>
-
-                          <DialogContent className="bg-white/95 backdrop-blur-xl border-white/40 shadow-2xl sm:max-w-[425px]">
-                            <DialogHeader>
-                              <DialogTitle className="text-gray-900">Are you absolutely sure?</DialogTitle>
-                              <DialogDescription className="text-gray-600 pt-2">
-                                This action cannot be undone. This will permanently delete your credentials for <span className="font-bold text-gray-900">{selectedSite.name}</span>.
-                              </DialogDescription>
-                            </DialogHeader>
-
-                            {/* Dialog Footer for the Action Buttons */}
-                            <DialogFooter className="mt-4 flex gap-2 sm:justify-end">
-                              <DialogClose asChild>
-                                <Button variant="ghost" className="text-gray-600 hover:bg-gray-100">
-                                  Cancel
-                                </Button>
-                              </DialogClose>
-                              <DialogClose asChild>
-                                <Button
-                                  onClick={() => {
-                                    // Your actual delete logic goes here later
-                                    setSelectedSite(null);
-                                  }}
-                                  className="bg-red-600 hover:bg-red-700 text-white shadow-md"
-                                >
-                                  Yes, delete it
-                                </Button>
-                              </DialogClose>
-                            </DialogFooter>
-                          </DialogContent>
-                        </Dialog>
-
-                        {/* Save & Cancel Buttons */}
-                        <div className="flex gap-2">
+                      {/* The Delete Button using standard Dialog */}
+                      <Dialog>
+                        <DialogTrigger asChild>
                           <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setSelectedSite(null)}
-                            className="text-gray-600 hover:bg-gray-900/5"
+                            className="text-red-600 bg-red-500/10 hover:bg-red-500/20 hover:text-red-700 flex gap-2 items-center"
                           >
-                            Cancel
-                          </Button>
-                          <Button size="sm" className="bg-gray-900 text-white hover:bg-gray-800 shadow-md">
-                            Save
-                          </Button>
-                        </div>
 
+                            Delete<lord-icon
+                              src="https://cdn.lordicon.com/xyfswyxf.json"
+                              trigger="hover"
+                              style={{ width: "20px", height: "20px" }}
+                            ></lord-icon>
+                          </Button>
+                        </DialogTrigger>
+
+                        <DialogContent className="bg-white/95 backdrop-blur-xl border-white/40 shadow-2xl sm:max-w-[425px]">
+                          <DialogHeader>
+                            <DialogTitle className="text-gray-900">Are you absolutely sure?</DialogTitle>
+                            <DialogDescription className="text-gray-600 pt-2">
+                              This action cannot be undone. This will permanently delete your credentials for <span className="font-bold text-gray-900">{selectedSite.name}</span>.
+                            </DialogDescription>
+                          </DialogHeader>
+
+                          {/* Dialog Footer */}
+                          <DialogFooter className="mt-4 flex gap-2 sm:justify-end">
+                            <DialogClose asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setSelectedSite(null)}
+                                className="bg-gray-200 text-gray-600 hover:bg-gray-900/5"
+                              >
+                                Cancel
+                                <lord-icon
+                                  src="https://cdn.lordicon.com/vgpkjbvw.json"
+                                  trigger="hover"
+                                  colors="primary:#000000"
+                                  style={{ width: "20px", height: "20px" }}
+                                ></lord-icon>
+                              </Button>
+                            </DialogClose>
+                            <DialogClose asChild>
+                              <Button
+                                onClick={() => {
+                                  setSelectedSite(null);
+                                }}
+                                className="bg-red-600 hover:bg-red-700 text-white shadow-md"
+                              >
+                                Yes, delete it<lord-icon
+                                  src="https://cdn.lordicon.com/xyfswyxf.json"
+                                  trigger="hover"
+                                  style={{ width: "20px", height: "20px" }}
+                                ></lord-icon>
+                              </Button>
+                            </DialogClose>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+
+                      {/* Save & Cancel Buttons */}
+                      <div className="flex gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setSelectedSite(null)}
+                          className="bg-gray-200 text-gray-600 hover:bg-gray-900/5"
+                        >
+                          Cancel
+                          <lord-icon
+                            src="https://cdn.lordicon.com/vgpkjbvw.json"
+                            trigger="hover"
+                            colors="primary:#000000"
+                            style={{ width: "20px", height: "20px" }}
+                          ></lord-icon>
+                        </Button>
+                        <Button size="sm" className="bg-gray-900 text-white hover:bg-gray-800 shadow-md">
+                          Save
+                          <lord-icon
+                            src="https://cdn.lordicon.com/zdfcfvwu.json"
+                            trigger="hover"
+                            colors="primary:#ffffff"
+                            style={{ width: "20px", height: "20px" }}
+                          ></lord-icon>           </Button>
                       </div>
 
                     </div>
-
                   </div>
                 </div>
               )}
             </CardContent>
-
-            {/* <CardFooter className="border-t border-white/40 pt-4">
-              <p className="text-sm text-gray-800">Card Footer</p>
-            </CardFooter> */}
 
           </Card>
         </div>
