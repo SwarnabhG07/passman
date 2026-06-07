@@ -3,12 +3,24 @@ import imgbg from '@/assets/imgbg.jpeg'
 import { useState } from 'react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { Field, FieldGroup } from "@/components/ui/field"
+import { Label } from "@/components/ui/label"
 
 type Site = {
   id: number;
   name: string;
   username: string;
 };
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 
 import {
   Card,
@@ -32,6 +44,9 @@ function App() {
     <>
       <div className="relative w-full h-screen overflow-hidden">
         <img src={imgbg} className='absolute inset-0 w-full h-full object-cover -z-10' alt="Background" />
+        <p className="absolute top-1 left-4 text-2xl font-bold tracking-widest text-black z-10">
+          PassMan.
+        </p>
 
         <div className="flex items-center justify-center h-full p-4">
           <Card className="w-[90%] h-[90%] flex flex-col justify-between bg-white/20 backdrop-blur-lg border border-white/30 shadow-2xl p-2">
@@ -128,23 +143,71 @@ function App() {
                       />
                     </div>
 
-                    {/* Action Buttons - Swapped to size="sm" */}
-                    <div>
-                      <Button variant="destructive" className='translate-y-13' >Delete</Button>
-                    </div>
-                    <div className="mt-2 flex justify-end gap-2">
-                      
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setSelectedSite(null)}
-                        className="text-gray-600 hover:bg-gray-900/5"
-                      >
-                        Cancel
-                      </Button>
-                      <Button size="sm" className="bg-gray-900 text-white hover:bg-gray-800 shadow-md">
-                        Save
-                      </Button>
+                    {/* Action Buttons Container - Pinned to Bottom */}
+                    <div className="mt-auto pt-6 flex justify-between items-center w-full">
+
+                      {/* Action Buttons Container - Pinned to Bottom */}
+                      <div className="mt-auto pt-6 flex justify-between items-center w-full">
+
+                        {/* The Delete Button using standard Dialog */}
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-600 bg-red-500/10 hover:bg-red-500/20 hover:text-red-700"
+                            >
+                              Delete
+                            </Button>
+                          </DialogTrigger>
+
+                          <DialogContent className="bg-white/95 backdrop-blur-xl border-white/40 shadow-2xl sm:max-w-[425px]">
+                            <DialogHeader>
+                              <DialogTitle className="text-gray-900">Are you absolutely sure?</DialogTitle>
+                              <DialogDescription className="text-gray-600 pt-2">
+                                This action cannot be undone. This will permanently delete your credentials for <span className="font-bold text-gray-900">{selectedSite.name}</span>.
+                              </DialogDescription>
+                            </DialogHeader>
+
+                            {/* Dialog Footer for the Action Buttons */}
+                            <DialogFooter className="mt-4 flex gap-2 sm:justify-end">
+                              <DialogClose asChild>
+                                <Button variant="ghost" className="text-gray-600 hover:bg-gray-100">
+                                  Cancel
+                                </Button>
+                              </DialogClose>
+                              <DialogClose asChild>
+                                <Button
+                                  onClick={() => {
+                                    // Your actual delete logic goes here later
+                                    setSelectedSite(null);
+                                  }}
+                                  className="bg-red-600 hover:bg-red-700 text-white shadow-md"
+                                >
+                                  Yes, delete it
+                                </Button>
+                              </DialogClose>
+                            </DialogFooter>
+                          </DialogContent>
+                        </Dialog>
+
+                        {/* Save & Cancel Buttons */}
+                        <div className="flex gap-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setSelectedSite(null)}
+                            className="text-gray-600 hover:bg-gray-900/5"
+                          >
+                            Cancel
+                          </Button>
+                          <Button size="sm" className="bg-gray-900 text-white hover:bg-gray-800 shadow-md">
+                            Save
+                          </Button>
+                        </div>
+
+                      </div>
+
                     </div>
 
                   </div>
