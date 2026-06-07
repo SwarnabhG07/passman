@@ -60,7 +60,7 @@ function App() {
 
               <div className={`flex flex-col h-full overflow-y-auto transition-all duration-500 ease-in-out pr-2 ${selectedSite ? 'w-[55%]' : 'w-full'}`}>
                 <div className="flex justify-end mb-2 shrink-0 pr-1">
-                  <Button
+                  <Button onClick={() => setSelectedSite({ id: Date.now(), name: '', username: '' })}
                     size="icon"
                     className="rounded-full bg-gray-900 text-white hover:bg-gray-800 shadow-sm h-8 w-8 text-lg font-light pb-0.5"
                   >
@@ -90,16 +90,17 @@ function App() {
                     ✕
                   </button>
 
+                  {/* Dynamic Header: Shows name, or "New Site" if blank */}
                   <div className="mt-1 flex flex-col items-center text-center mb-4">
                     <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center text-2xl mb-2 shadow-sm border border-gray-100">
                       🌍
                     </div>
                     <h2 className="text-xl font-bold text-gray-900">
-                      {selectedSite.name}
+                      {selectedSite.name || "New Site"}
                     </h2>
                   </div>
 
-                  {/* Form Area */}
+                  {/* Form Area with Placeholders */}
                   <div className="flex flex-col gap-3 w-full pb-1">
 
                     <div className="space-y-1">
@@ -107,7 +108,8 @@ function App() {
                         Website URL
                       </label>
                       <Input
-                        defaultValue={`https://${selectedSite.name.toLowerCase()}.com`}
+                        defaultValue={selectedSite.name ? `https://${selectedSite.name.toLowerCase()}.com` : ''}
+                        placeholder="https://example.com"
                         className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm h-9 text-sm"
                       />
                     </div>
@@ -118,6 +120,7 @@ function App() {
                       </label>
                       <Input
                         defaultValue={selectedSite.username}
+                        placeholder="user@example.com"
                         className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm h-9 text-sm"
                       />
                     </div>
@@ -128,74 +131,67 @@ function App() {
                       </label>
                       <Input
                         type="password"
-                        defaultValue="hiddenpassword123"
-                        className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm text-lg tracking-widest h-9"
+                        defaultValue={selectedSite.name ? "hiddenpassword123" : ""}
+                        placeholder="Enter a secure password"
+                        className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm text-lg tracking-widest h-9 placeholder:text-sm placeholder:tracking-normal"
                       />
                     </div>
 
                     {/* Fixed Action Buttons Container */}
                     <div className="mt-auto pt-6 flex justify-between items-center w-full">
 
-                      {/* The Delete Button using standard Dialog */}
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-red-600 bg-red-500/10 hover:bg-red-500/20 hover:text-red-700 flex gap-2 items-center"
-                          >
-
-                            Delete<lord-icon
-                              src="https://cdn.lordicon.com/xyfswyxf.json"
-                              trigger="hover"
-                              style={{ width: "20px", height: "20px" }}
-                            ></lord-icon>
-                          </Button>
-                        </DialogTrigger>
-
-                        <DialogContent className="bg-white/95 backdrop-blur-xl border-white/40 shadow-2xl sm:max-w-[425px]">
-                          <DialogHeader>
-                            <DialogTitle className="text-gray-900">Are you absolutely sure?</DialogTitle>
-                            <DialogDescription className="text-gray-600 pt-2">
-                              This action cannot be undone. This will permanently delete your credentials for <span className="font-bold text-gray-900">{selectedSite.name}</span>.
-                            </DialogDescription>
-                          </DialogHeader>
-
-                          {/* Dialog Footer */}
-                          <DialogFooter className="mt-4 flex gap-2 sm:justify-end">
-                            <DialogClose asChild>
+                      {/* Only show the Delete button if this is an existing site (has a name) */}
+                      <div>
+                        {selectedSite.name !== '' && (
+                          <Dialog>
+                            <DialogTrigger asChild>
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                onClick={() => setSelectedSite(null)}
-                                className="bg-gray-200 text-gray-600 hover:bg-gray-900/5"
+                                className="text-red-600 bg-red-500/10 hover:bg-red-500/20 hover:text-red-700 flex gap-2 items-center"
                               >
-                                Cancel
+                                Delete
                                 <lord-icon
-                                  src="https://cdn.lordicon.com/vgpkjbvw.json"
-                                  trigger="hover"
-                                  colors="primary:#000000"
-                                  style={{ width: "20px", height: "20px" }}
-                                ></lord-icon>
-                              </Button>
-                            </DialogClose>
-                            <DialogClose asChild>
-                              <Button
-                                onClick={() => {
-                                  setSelectedSite(null);
-                                }}
-                                className="bg-red-600 hover:bg-red-700 text-white shadow-md"
-                              >
-                                Yes, delete it<lord-icon
                                   src="https://cdn.lordicon.com/xyfswyxf.json"
                                   trigger="hover"
                                   style={{ width: "20px", height: "20px" }}
                                 ></lord-icon>
                               </Button>
-                            </DialogClose>
-                          </DialogFooter>
-                        </DialogContent>
-                      </Dialog>
+                            </DialogTrigger>
+
+                            <DialogContent className="bg-white/95 backdrop-blur-xl border-white/40 shadow-2xl sm:max-w-[425px]">
+                              <DialogHeader>
+                                <DialogTitle className="text-gray-900">Are you absolutely sure?</DialogTitle>
+                                <DialogDescription className="text-gray-600 pt-2">
+                                  This action cannot be undone. This will permanently delete your credentials for <span className="font-bold text-gray-900">{selectedSite.name}</span>.
+                                </DialogDescription>
+                              </DialogHeader>
+
+                              {/* Dialog Footer */}
+                              <DialogFooter className="mt-4 flex gap-2 sm:justify-end">
+                                <DialogClose asChild>
+                                  <Button
+                                    variant="ghost"
+                                    className="bg-gray-200 text-gray-600 hover:bg-gray-300"
+                                  >
+                                    Cancel
+                                  </Button>
+                                </DialogClose>
+                                <DialogClose asChild>
+                                  <Button
+                                    onClick={() => {
+                                      setSelectedSite(null);
+                                    }}
+                                    className="bg-red-600 hover:bg-red-700 text-white shadow-md"
+                                  >
+                                    Yes, delete it
+                                  </Button>
+                                </DialogClose>
+                              </DialogFooter>
+                            </DialogContent>
+                          </Dialog>
+                        )}
+                      </div>
 
                       {/* Save & Cancel Buttons */}
                       <div className="flex gap-2">
@@ -203,7 +199,7 @@ function App() {
                           variant="ghost"
                           size="sm"
                           onClick={() => setSelectedSite(null)}
-                          className="bg-gray-200 text-gray-600 hover:bg-gray-900/5"
+                          className="bg-gray-200 text-gray-600 hover:bg-gray-300"
                         >
                           Cancel
                           <lord-icon
@@ -220,7 +216,8 @@ function App() {
                             trigger="hover"
                             colors="primary:#ffffff"
                             style={{ width: "20px", height: "20px" }}
-                          ></lord-icon>           </Button>
+                          ></lord-icon>
+                        </Button>
                       </div>
 
                     </div>
