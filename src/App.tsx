@@ -47,6 +47,26 @@ const formSchema = z.object({
 })
 
 function App() {
+  const getSiteName = (url: string) => {
+    if (!url) return "New Site";
+    try {
+      const formattedUrl = url.startsWith('http') ? url : `https://${url}`;
+      const domain = new URL(formattedUrl).hostname;
+      const namePart = domain.replace('www.', '').split('.')[0];
+      return namePart.charAt(0).toUpperCase() + namePart.slice(1);
+    } catch (e) {
+      return url.substring(0, 15) + "...";
+    }
+  };
+  const getDomain = (url: string) => {
+    if (!url) return null;
+    try {
+      const formattedUrl = url.startsWith('http') ? url : `https://${url}`;
+      return new URL(formattedUrl).hostname;
+    } catch (e) {
+      return null;
+    }
+  };
   const [sites, setSites] = useState<Site[]>(() => {
     const saved = localStorage.getItem("passman_sites");
     return saved ? JSON.parse(saved) : [];
@@ -133,10 +153,30 @@ function App() {
                   <div
                     key={site.id}
                     onClick={() => setSelectedSite(site)}
-                    className="border border-gray-200 bg-white/40 p-4 rounded-xl mb-3 cursor-pointer hover:bg-white/70 transition-colors shadow-sm"
+                    // 1. Added flex, items-center, and gap-3 to align the icon and text side-by-side
+                    className="flex items-center gap-3 border border-gray-200 bg-white/40 p-4 rounded-xl mb-3 cursor-pointer hover:bg-white/70 transition-colors shadow-sm"
                   >
-                    <p className="font-bold text-gray-900">{site.url}</p>
-                    <p className="text-sm text-gray-700">{site.username}</p>
+
+                    {/* 2. The Favicon Container */}
+                    <div className="w-10 h-10 shrink-0 rounded-full bg-white flex items-center justify-center shadow-sm overflow-hidden border border-gray-100">
+                      {getDomain(site.url) ? (
+                        <img
+                          src={`https://www.google.com/s2/favicons?domain=${getDomain(site.url)}&sz=128`}
+                          alt="logo"
+                          className="w-5 h-5 object-contain"
+                        />
+                      ) : (
+                        <span className="text-lg">🌍</span>
+                      )}
+                    </div>
+
+                    {/* 3. The Text Container */}
+                    {/* overflow-hidden here is CRITICAL so the truncate class on the text still works! */}
+                    <div className="flex flex-col overflow-hidden">
+                      <p className="font-bold text-gray-900 truncate">{getSiteName(site.url)}</p>
+                      <p className="text-sm text-gray-700 truncate">{site.username}</p>
+                    </div>
+
                   </div>
                 ))}
               </div>
@@ -151,13 +191,23 @@ function App() {
                     ✕
                   </button>
 
-                  {/* Dynamic Header: Shourl, or "New Site" if blank */}
+
+                  {/* Dynamic Header: Shows Logo and Clean Name */}
                   <div className="mt-1 flex flex-col items-center text-center mb-4">
-                    <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center text-2xl mb-2 shadow-sm border border-gray-100">
-                      🌍
+                    <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center text-2xl mb-2 shadow-sm border border-gray-100 overflow-hidden">
+
+                      {getDomain(selectedSite.url) ? (
+                        <img
+                          src={`https://www.google.com/s2/favicons?domain=${getDomain(selectedSite.url)}&sz=128`}
+                          alt="logo"
+                          className="w-8 h-8 object-contain"
+                        />
+                      ) : (
+                        <span>🌍</span>
+                      )}
                     </div>
-                    <h2 className="text-xl font-bold text-gray-900">
-                      {selectedSite.url || "New Site"}
+                    <h2 className="text-xl font-bold text-gray-900 line-clamp-2">
+                      {getSiteName(selectedSite.url)}
                     </h2>
                   </div>
 
