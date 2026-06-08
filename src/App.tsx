@@ -3,6 +3,13 @@ import imgbg from '@/assets/imgbg.jpeg'
 import { useState } from 'react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import * as React from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { toast } from "sonner"
+import * as z from "zod"
+
+
 import {
   Dialog,
   DialogClose,
@@ -24,16 +31,70 @@ import {
 
 type Site = {
   id: number;
-  name: string;
+  url: string;
   username: string;
+  password?: string;
 };
 
+const formSchema = z.object({
+  username: z
+    .string()
+  ,
+  url: z
+    .string()
+  ,
+  password: z.string(),
+})
+
 function App() {
-  const [sites] = useState([
-    { id: 1, name: 'Airtable', username: 'ryan@example.com' },
-    { id: 2, name: 'Airbnb', username: 'ryan@example.com' }
-  ]);
+  const [sites, setSites] = useState<Site[]>(() => {
+    const saved = localStorage.getItem("passman_sites");
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
+
+  // const [form, setform] = useState({ site: "", })
+
+  // 4. The actual save logic
+  const onSubmit = (data: z.infer<typeof formSchema>) => {
+    const newSite = {
+      id: selectedSite?.id || Date.now(),
+      ...data
+    };
+
+    let updatedSites;
+    // Check if we are updating an existing site or adding a new one
+    if (sites.some(s => s.id === newSite.id)) {
+      updatedSites = sites.map(s => s.id === newSite.id ? newSite : s);
+    } else {
+      updatedSites = [...sites, newSite];
+    }
+
+    setSites(updatedSites);
+    localStorage.setItem("passman_sites", JSON.stringify(updatedSites));
+
+    toast.success("Credentials saved!");
+    setSelectedSite(null); // Close the right panel
+  };
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      url: "",
+      username: "",
+      password: ""
+    },
+  });
+  React.useEffect(() => {
+    if (selectedSite) {
+      form.reset({
+        url: selectedSite.url || "",
+        username: selectedSite.username || "",
+        password: selectedSite.password || ""
+      });
+    }
+  }, [selectedSite, form]);
 
   return (
     <>
@@ -60,7 +121,7 @@ function App() {
 
               <div className={`flex flex-col h-full overflow-y-auto transition-all duration-500 ease-in-out pr-2 ${selectedSite ? 'w-[55%]' : 'w-full'}`}>
                 <div className="flex justify-end mb-2 shrink-0 pr-1">
-                  <Button onClick={() => setSelectedSite({ id: Date.now(), name: '', username: '' })}
+                  <Button onClick={() => setSelectedSite({ id: Date.now(), url: '', username: '' })}
                     size="icon"
                     className="rounded-full bg-gray-900 text-white hover:bg-gray-800 shadow-sm h-8 w-8 text-lg font-light pb-0.5"
                   >
@@ -74,7 +135,7 @@ function App() {
                     onClick={() => setSelectedSite(site)}
                     className="border border-gray-200 bg-white/40 p-4 rounded-xl mb-3 cursor-pointer hover:bg-white/70 transition-colors shadow-sm"
                   >
-                    <p className="font-bold text-gray-900">{site.name}</p>
+                    <p className="font-bold text-gray-900">{site.url}</p>
                     <p className="text-sm text-gray-700">{site.username}</p>
                   </div>
                 ))}
@@ -90,13 +151,13 @@ function App() {
                     ✕
                   </button>
 
-                  {/* Dynamic Header: Shows name, or "New Site" if blank */}
+                  {/* Dynamic Header: Shourl, or "New Site" if blank */}
                   <div className="mt-1 flex flex-col items-center text-center mb-4">
                     <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center text-2xl mb-2 shadow-sm border border-gray-100">
                       🌍
                     </div>
                     <h2 className="text-xl font-bold text-gray-900">
-                      {selectedSite.name || "New Site"}
+                      {selectedSite.url || "New Site"}
                     </h2>
                   </div>
 
@@ -108,7 +169,7 @@ function App() {
                         Website URL
                       </label>
                       <Input
-                        defaultValue={selectedSite.name ? `https://${selectedSite.name.toLowerCase()}.com` : ''}
+                        {...form.register("url")}
                         placeholder="https://example.com"
                         className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm h-9 text-sm"
                       />
@@ -119,7 +180,7 @@ function App() {
                         Username
                       </label>
                       <Input
-                        defaultValue={selectedSite.username}
+                        {...form.register("username")}
                         placeholder="user@example.com"
                         className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm h-9 text-sm"
                       />
@@ -131,7 +192,7 @@ function App() {
                       </label>
                       <Input
                         type="password"
-                        defaultValue={selectedSite.name ? "hiddenpassword123" : ""}
+                        {...form.register("password")}
                         placeholder="Enter a secure password"
                         className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm text-lg tracking-widest h-9 placeholder:text-sm placeholder:tracking-normal"
                       />
@@ -142,7 +203,7 @@ function App() {
 
                       {/* Only show the Delete button if this is an existing site (has a name) */}
                       <div>
-                        {selectedSite.name !== '' && (
+                        {selectedSite.url !== '' && (
                           <Dialog>
                             <DialogTrigger asChild>
                               <Button
@@ -163,7 +224,7 @@ function App() {
                               <DialogHeader>
                                 <DialogTitle className="text-gray-900">Are you absolutely sure?</DialogTitle>
                                 <DialogDescription className="text-gray-600 pt-2">
-                                  This action cannot be undone. This will permanently delete your credentials for <span className="font-bold text-gray-900">{selectedSite.name}</span>.
+                                  This action cannot be undone. This will permanently delete your credentials for <span className="font-bold text-gray-900">{selectedSite.url}</span>.
                                 </DialogDescription>
                               </DialogHeader>
 
@@ -209,7 +270,11 @@ function App() {
                             style={{ width: "20px", height: "20px" }}
                           ></lord-icon>
                         </Button>
-                        <Button size="sm" className="bg-gray-900 text-white hover:bg-gray-800 shadow-md">
+                        <Button
+                          onClick={form.handleSubmit(onSubmit)}
+                          size="sm"
+                          className="bg-gray-900 text-white hover:bg-gray-800 shadow-md"
+                        >
                           Save
                           <lord-icon
                             src="https://cdn.lordicon.com/zdfcfvwu.json"
