@@ -74,7 +74,6 @@ function App() {
 
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
 
-  // const [form, setform] = useState({ site: "", })
 
   // 4. The actual save logic
   const onSubmit = (data: z.infer<typeof formSchema>) => {
@@ -143,9 +142,15 @@ function App() {
                 <div className="flex justify-end mb-2 shrink-0 pr-1">
                   <Button onClick={() => setSelectedSite({ id: Date.now(), url: '', username: '' })}
                     size="icon"
-                    className="rounded-full bg-gray-900 text-white hover:bg-gray-800 shadow-sm h-8 w-8 text-lg font-light pb-0.5"
+                    className="rounded-full bg-gray-900 h-8 w-26 text-sm gap-1 text-white hover:bg-gray-800 shadow-md pb-0"
                   >
-                    +
+                    Add Site
+                    <lord-icon
+                      src="https://cdn.lordicon.com/efxgwrkc.json"
+                      trigger="hover"
+                      colors="primary:#ffffff"
+                      style={{ width: "20px", height: "20px" }}>
+                    </lord-icon>
                   </Button>
                 </div>
 
@@ -248,7 +253,6 @@ function App() {
                       />
                     </div>
 
-                    {/* Fixed Action Buttons Container */}
                     <div className="mt-auto pt-6 flex justify-between items-center w-full">
 
                       {/* Only show the Delete button if this is an existing site (has a name) */}
@@ -259,7 +263,7 @@ function App() {
                               <Button
                                 variant="ghost"
                                 size="sm"
-                                className="text-red-600 bg-red-500/10 hover:bg-red-500/20 hover:text-red-700 flex gap-2 items-center"
+                                className="text-red-600 bg-red-500/10 hover:bg-red-500/20 hover:text-red-700 flex gap-1 items-center"
                               >
                                 Delete
                                 <lord-icon
@@ -274,18 +278,24 @@ function App() {
                               <DialogHeader>
                                 <DialogTitle className="text-gray-900">Are you absolutely sure?</DialogTitle>
                                 <DialogDescription className="text-gray-600 pt-2">
-                                  This action cannot be undone. This will permanently delete your credentials for <span className="font-bold text-gray-900">{selectedSite.url}</span>.
+                                  This action cannot be undone. This will permanently delete your credentials for<p className="font-bold text-gray-900 truncate">Site - {getSiteName(selectedSite.url)}</p>
+                                  <p className="font-bold text-sm text-gray-700 truncate">Username - {selectedSite.username}</p>
                                 </DialogDescription>
                               </DialogHeader>
 
                               {/* Dialog Footer */}
-                              <DialogFooter className="mt-4 flex gap-2 sm:justify-end">
+                              <DialogFooter className="flex gap-2 sm:justify-end">
                                 <DialogClose asChild>
                                   <Button
                                     variant="ghost"
                                     className="bg-gray-200 text-gray-600 hover:bg-gray-300"
                                   >
-                                    Cancel
+                                    Cancel<lord-icon
+                                      src="https://cdn.lordicon.com/vgpkjbvw.json"
+                                      trigger="hover"
+                                      colors="primary:#000000"
+                                      style={{ width: "20px", height: "20px" }}
+                                    ></lord-icon>
                                   </Button>
                                 </DialogClose>
                                 <DialogClose asChild>
@@ -296,6 +306,11 @@ function App() {
                                     className="bg-red-600 hover:bg-red-700 text-white shadow-md"
                                   >
                                     Yes, delete it
+                                    <lord-icon
+                                      src="https://cdn.lordicon.com/xyfswyxf.json"
+                                      trigger="hover"
+                                      style={{ width: "20px", height: "20px" }}
+                                    ></lord-icon>
                                   </Button>
                                 </DialogClose>
                               </DialogFooter>
@@ -305,7 +320,7 @@ function App() {
                       </div>
 
                       {/* Save & Cancel Buttons */}
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 ">
                         <Button
                           variant="ghost"
                           size="sm"
