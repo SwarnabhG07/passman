@@ -211,9 +211,24 @@ function App() {
                         <span>🌍</span>
                       )}
                     </div>
-                    <h2 className="text-xl font-bold text-gray-900 line-clamp-2">
-                      {getSiteName(selectedSite.url)}
-                    </h2>
+                    <div className="flex items-center justify-center w-full">
+                      {selectedSite.url && <div className="w-8 shrink-0" />}
+                      <h2 className="text-xl font-bold text-gray-900 line-clamp-2 text-center">
+                        {getSiteName(selectedSite.url)}
+                      </h2>
+                      {selectedSite.url && (
+                        <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0 ml-1" asChild>
+                          <a href={selectedSite.url.startsWith('http') ? selectedSite.url : `https://${selectedSite.url}`} target="_blank" rel="noreferrer">
+                            <lord-icon
+                              src="https://cdn.lordicon.com/zllgguxq.json"
+                              trigger="hover"
+                              colors="primary:#000000"
+                              style={{ width: "20px", height: "20px" }}
+                            ></lord-icon>
+                          </a>
+                        </Button>
+                      )}
+                    </div>
                   </div>
 
                   {/* Form Area with Placeholders */}
