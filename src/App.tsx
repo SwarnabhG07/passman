@@ -94,7 +94,7 @@ function App() {
     localStorage.setItem("passman_sites", JSON.stringify(updatedSites));
 
     toast.success("Credentials saved!");
-    setSelectedSite(null);
+    setSelectedSite(null); 
   };
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -116,11 +116,20 @@ function App() {
   }, [selectedSite, form]);
 
   const CopyText = (text: string) => {
-    toast("Text has been Copied", {
+    toast.success("Text Copied Succesfully!!", {
           description: text,
           
         })
     navigator.clipboard.writeText(text);
+  }
+
+  const HandleDelete = () => {
+    if (!selectedSite) return;
+    const updatedSites = sites.filter(s => s.id !== selectedSite.id);
+    setSites(updatedSites);
+    localStorage.setItem("passman_sites", JSON.stringify(updatedSites));
+    setSelectedSite(null);
+    toast.success("Credentials deleted!");
   }
 
   return (
@@ -139,9 +148,9 @@ function App() {
               <div className="flex justify-between items-start">
                 <div>
                   <CardTitle className="text-2xl text-gray-900">All Keys</CardTitle>
-                  <CardDescription className="text-gray-800">128</CardDescription>
+                  <CardDescription className="text-gray-800">{sites.length}</CardDescription>
                 </div>
-                <CardAction>Card Action</CardAction>
+                {/* <CardAction>Card Action</CardAction> */}
               </div>
             </CardHeader>
 
@@ -365,9 +374,7 @@ function App() {
                                 </DialogClose>
                                 <DialogClose asChild>
                                   <Button
-                                    onClick={() => {
-                                      setSelectedSite(null);
-                                    }}
+                                    onClick={HandleDelete}
                                     className="bg-red-600 hover:bg-red-700 text-white shadow-md"
                                   >
                                     Yes, delete it
