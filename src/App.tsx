@@ -9,7 +9,7 @@ import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import { Toaster } from "sonner"
 import * as z from "zod"
-import { Copy } from "lucide-react"
+import { Copy, Eye, EyeOff } from "lucide-react"
 
 
 import {
@@ -75,6 +75,7 @@ function App() {
   });
 
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
@@ -309,12 +310,21 @@ function App() {
 
                       <div className="flex items-center gap-2">
 
+                      <div className="relative w-full">
                         <Input
-                          type="password"
+                          type={showPassword ? "text" : "password"}
                           {...form.register("password")}
                           placeholder="Enter password"
-                          className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm text-lg tracking-widest h-9 placeholder:text-sm placeholder:tracking-normal w-full"
+                          className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm text-lg tracking-widest h-9 placeholder:text-sm placeholder:tracking-normal w-full pr-9"
                         />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800 transition-colors"
+                        >
+                          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
+                      </div>
 
                         <Button onClick={() => CopyText(form.getValues("password"))}
                           type="button"
