@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
 import * as z from "zod"
+import { Copy } from "lucide-react"
 
 
 import {
@@ -75,7 +76,6 @@ function App() {
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
 
 
-  // 4. The actual save logic
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     const newSite = {
       id: selectedSite?.id || Date.now(),
@@ -83,7 +83,6 @@ function App() {
     };
 
     let updatedSites;
-    // Check if we are updating an existing site or adding a new one
     if (sites.some(s => s.id === newSite.id)) {
       updatedSites = sites.map(s => s.id === newSite.id ? newSite : s);
     } else {
@@ -114,6 +113,10 @@ function App() {
       });
     }
   }, [selectedSite, form]);
+
+  const CopyText = (text: string) => {
+    navigator.clipboard.writeText(text);
+  }
 
   return (
     <>
@@ -158,7 +161,6 @@ function App() {
                   <div
                     key={site.id}
                     onClick={() => setSelectedSite(site)}
-                    // 1. Added flex, items-center, and gap-3 to align the icon and text side-by-side
                     className="flex items-center gap-3 border border-gray-200 bg-white/40 p-4 rounded-xl mb-3 cursor-pointer hover:bg-white/70 transition-colors shadow-sm"
                   >
 
@@ -176,7 +178,7 @@ function App() {
                     </div>
 
                     {/* 3. The Text Container */}
-                    {/* overflow-hidden here is CRITICAL so the truncate class on the text still works! */}
+
                     <div className="flex flex-col overflow-hidden">
                       <p className="font-bold text-gray-900 truncate">{getSiteName(site.url)}</p>
                       <p className="text-sm text-gray-700 truncate">{site.username}</p>
@@ -195,6 +197,7 @@ function App() {
                   >
                     ✕
                   </button>
+
 
 
                   {/* Dynamic Header: Shows Logo and Clean Name */}
@@ -238,39 +241,79 @@ function App() {
                       <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider pl-1">
                         Website URL
                       </label>
-                      <Input
-                        {...form.register("url")}
-                        placeholder="https://example.com"
-                        className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm h-9 text-sm"
-                      />
+
+                      <div className="flex items-center gap-2">
+
+                        <Input
+                          {...form.register("url")}
+                          placeholder="https://example.com"
+                          className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm h-9 text-sm w-full"
+                        />
+
+                        <Button
+                        onClick={() => CopyText(form.getValues("url"))}
+                          type="button"
+                          size="icon"
+                          className="h-9 w-9 shrink-0 bg-black hover:bg-gray-800 shadow-sm rounded-md"
+                        >
+                          <Copy className="w-4 h-4 text-white" />
+                        </Button>
+
+                      </div>
                     </div>
 
                     <div className="space-y-1">
                       <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider pl-1">
                         Username
                       </label>
-                      <Input
-                        {...form.register("username")}
-                        placeholder="user@example.com"
-                        className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm h-9 text-sm"
-                      />
+
+                      <div className="flex items-center gap-2">
+
+                        <Input
+                          {...form.register("username")}
+                          placeholder="user@example.com"
+                          className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm h-9 text-sm w-full"
+                        />
+
+                        <Button
+                          onClick={() => CopyText(form.getValues("username"))}
+                          type="button"
+                          size="icon"
+                          className="h-9 w-9 shrink-0 bg-black hover:bg-gray-800 shadow-sm rounded-md"
+                        >
+                          <Copy className="w-4 h-4 text-white" />
+                        </Button>
+
+                      </div>
                     </div>
 
                     <div className="space-y-1">
                       <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider pl-1">
                         Password
                       </label>
-                      <Input
-                        type="password"
-                        {...form.register("password")}
-                        placeholder="Enter a secure password"
-                        className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm text-lg tracking-widest h-9 placeholder:text-sm placeholder:tracking-normal"
-                      />
+
+                      <div className="flex items-center gap-2">
+
+                        <Input
+                          type="password"
+                          {...form.register("password")}
+                          placeholder="Enter password"
+                          className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm text-lg tracking-widest h-9 placeholder:text-sm placeholder:tracking-normal w-full"
+                        />
+
+                        <Button onClick={() => CopyText(form.getValues("password"))}
+                          type="button"
+                          size="icon"
+                          className="h-9 w-9 shrink-0 bg-black hover:bg-gray-800 shadow-sm rounded-md"
+                        >
+                          <Copy className="w-4 h-4 text-white" />
+                        </Button>
+
+                      </div>
                     </div>
 
                     <div className="mt-auto pt-6 flex justify-between items-center w-full">
 
-                      {/* Only show the Delete button if this is an existing site (has a name) */}
                       <div>
                         {selectedSite.url !== '' && (
                           <Dialog>
@@ -286,6 +329,7 @@ function App() {
                                   trigger="hover"
                                   style={{ width: "20px", height: "20px" }}
                                 ></lord-icon>
+
                               </Button>
                             </DialogTrigger>
 
