@@ -7,6 +7,7 @@ import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { Toaster } from "sonner"
 import * as z from "zod"
 import { Copy } from "lucide-react"
 
@@ -93,7 +94,7 @@ function App() {
     localStorage.setItem("passman_sites", JSON.stringify(updatedSites));
 
     toast.success("Credentials saved!");
-    setSelectedSite(null); // Close the right panel
+    setSelectedSite(null);
   };
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -115,11 +116,16 @@ function App() {
   }, [selectedSite, form]);
 
   const CopyText = (text: string) => {
+    toast("Text has been Copied", {
+          description: text,
+          
+        })
     navigator.clipboard.writeText(text);
   }
 
   return (
     <>
+    <Toaster position="top-right" />
       <div className="relative w-full h-screen overflow-hidden">
         <img src={imgbg} className='absolute inset-0 w-full h-full object-cover -z-10' alt="Background" />
         <p className="absolute top-1 left-4 text-2xl font-bold tracking-widest text-black z-10">
