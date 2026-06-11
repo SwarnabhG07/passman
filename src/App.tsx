@@ -148,8 +148,8 @@ function App() {
           PassMan.
         </p>
 
-        <div className="flex items-center justify-center h-full p-4">
-          <Card className="w-[90%] h-[90%] flex flex-col justify-between bg-white/20 backdrop-blur-lg border border-white/30 shadow-2xl p-2">
+        <div className="flex items-center justify-center h-full transition-all duration-500 ease-in-out md:p-4 max-md:px-6 max-md:pt-[3rem] max-md:pb-6">
+          <Card className="w-full h-full md:w-[90%] md:h-[90%] flex flex-col justify-between bg-white/20 backdrop-blur-lg border border-white/30 shadow-2xl p-2 transition-all duration-500 max-md:rounded-3xl">
 
             <CardHeader>
               <div className="flex justify-between items-start">
@@ -161,9 +161,9 @@ function App() {
               </div>
             </CardHeader>
 
-            <CardContent className="grow flex flex-row w-full h-full gap-3 overflow-hidden">
+            <CardContent className="grow flex flex-col md:flex-row w-full h-full gap-3 overflow-y-auto md:overflow-hidden">
 
-              <div className={`flex flex-col h-full overflow-y-auto transition-all duration-500 ease-in-out pr-2 ${selectedSite ? 'w-[55%]' : 'w-full'}`}>
+              <div className={`flex flex-col h-full overflow-y-auto transition-all duration-500 ease-in-out pr-2 w-full order-2 md:order-1 ${selectedSite ? 'md:w-[55%]' : ''}`}>
                 <div className="flex justify-end mb-2 shrink-0 pr-1">
                   <Button onClick={() => setSelectedSite({ id: uuidv4(), url: '', username: '' })}
                     size="icon"
@@ -211,7 +211,7 @@ function App() {
               </div>
 
               {selectedSite && (
-                <div className="w-[45%] h-fit bg-white/50 backdrop-blur-md rounded-xl p-4 relative flex flex-col shadow-inner border border-white/40 animate-in slide-in-from-right-4 duration-300 overflow-y-auto hide-scrollbar">
+                <div className="detail-panel w-full md:w-[45%] shrink-0 h-fit bg-white/50 backdrop-blur-md rounded-xl p-3 md:p-4 relative flex flex-col shadow-inner border border-white/40 animate-in duration-300 md:overflow-y-auto order-1 md:order-2">
 
                   <button
                     onClick={() => setSelectedSite(null)}
@@ -223,14 +223,14 @@ function App() {
 
 
                   {/* Dynamic Header: Shows Logo and Clean Name */}
-                  <div className="mt-1 flex flex-col items-center text-center mb-4">
-                    <div className="w-14 h-14 rounded-full bg-white flex items-center justify-center text-2xl mb-2 shadow-sm border border-gray-100 overflow-hidden">
+                  <div className="mt-1 flex flex-col items-center text-center mb-2 md:mb-4">
+                    <div className="w-10 h-10 md:w-14 md:h-14 rounded-full bg-white flex items-center justify-center text-2xl mb-1 md:mb-2 shadow-sm border border-gray-100 overflow-hidden">
 
                       {getDomain(selectedSite.url) ? (
                         <img
                           src={`https://www.google.com/s2/favicons?domain=${getDomain(selectedSite.url)}&sz=128`}
                           alt="logo"
-                          className="w-8 h-8 object-contain"
+                          className="w-6 h-6 md:w-8 md:h-8 object-contain"
                         />
                       ) : (
                         <span>🌍</span>
@@ -238,7 +238,7 @@ function App() {
                     </div>
                     <div className="flex items-center justify-center w-full">
                       {selectedSite.url && <div className="w-8 shrink-0" />}
-                      <h2 className="text-xl font-bold text-gray-900 line-clamp-2 text-center">
+                      <h2 className="text-lg md:text-xl font-bold text-gray-900 line-clamp-2 text-center">
                         {getSiteName(selectedSite.url)}
                       </h2>
                       {selectedSite.url && (
@@ -257,7 +257,7 @@ function App() {
                   </div>
 
                   {/* Form Area with Placeholders */}
-                  <div className="flex flex-col gap-3 w-full pb-1">
+                  <div className="flex flex-col gap-2 md:gap-3 w-full pb-1">
 
                     <div className="space-y-1">
                       <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider pl-1">
@@ -343,7 +343,7 @@ function App() {
                       </div>
                     </div>
 
-                    <div className="mt-auto pt-6 flex justify-between items-center w-full">
+                    <div className="mt-auto pt-3 md:pt-6 flex justify-between items-center w-full">
 
                       <div>
                         {selectedSite.url !== '' && (
@@ -351,14 +351,13 @@ function App() {
                             <DialogTrigger asChild>
                               <Button
                                 variant="ghost"
-                                size="sm"
-                                className="text-red-600 bg-red-500/10 hover:bg-red-500/20 hover:text-red-700 flex gap-1 items-center"
+                                size="icon"
+                                className="text-red-600 bg-red-500/10 hover:bg-red-500/20 hover:text-red-700 h-9 w-9"
                               >
-                                Delete
                                 <lord-icon
                                   src="https://cdn.lordicon.com/xyfswyxf.json"
                                   trigger="hover"
-                                  style={{ width: "20px", height: "20px" }}
+                                  style={{ width: "22px", height: "22px" }}
                                 ></lord-icon>
 
                               </Button>
