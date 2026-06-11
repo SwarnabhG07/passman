@@ -33,7 +33,7 @@ import {
 } from "@/components/ui/card"
 
 type Site = {
-  id: number;
+  id: string;
   url: string;
   username: string;
   password?: string;
@@ -81,7 +81,7 @@ function App() {
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
     const newSite = {
-      id: selectedSite?.id || Date.now(),
+      id: selectedSite?.id || uuidv4(),
       ...data
     };
 
@@ -160,7 +160,7 @@ function App() {
 
               <div className={`flex flex-col h-full overflow-y-auto transition-all duration-500 ease-in-out pr-2 ${selectedSite ? 'w-[55%]' : 'w-full'}`}>
                 <div className="flex justify-end mb-2 shrink-0 pr-1">
-                  <Button onClick={() => setSelectedSite({ id: Date.now(), url: '', username: '' })}
+                  <Button onClick={() => setSelectedSite({ id: uuidv4(), url: '', username: '' })}
                     size="icon"
                     className="rounded-full bg-gray-900 h-8 w-26 text-sm gap-1 text-white hover:bg-gray-800 shadow-md pb-0"
                   >
