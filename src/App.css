@@ -1,3 +1,43 @@
+/* Themed Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.15) transparent;
+}
+
+/* Mobile detail panel: slide from top */
+@media (max-width: 767px) {
+  .detail-panel {
+    --tw-enter-translate-x: 0 !important;
+    --tw-enter-translate-y: -1rem !important;
+  }
+}
+
+/* Desktop detail panel: slide from right */
+@media (min-width: 768px) {
+  .detail-panel {
+    --tw-enter-translate-x: 1rem !important;
+    --tw-enter-translate-y: 0 !important;
+  }
+}
+
 .counter {
   font-size: 16px;
   padding: 5px 10px;
