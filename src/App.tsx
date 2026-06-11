@@ -11,6 +11,7 @@ import { Toaster } from "sonner"
 import * as z from "zod"
 import { Copy, Eye, EyeOff } from "lucide-react"
 import { v4 as uuidv4 } from "uuid";
+import { Analytics } from '@vercel/analytics/react';
 
 
 import {
@@ -142,6 +143,7 @@ function App() {
   return (
     <>
     <Toaster position="top-right" />
+    <Analytics />
       <div className="relative w-full h-screen overflow-hidden">
         <img src={imgbg} className='absolute inset-0 w-full h-full object-cover -z-10' alt="Background" />
         <p className="absolute top-1 left-4 text-2xl font-bold tracking-widest text-black z-10">
