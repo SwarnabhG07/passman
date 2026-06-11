@@ -351,15 +351,15 @@ function App() {
                             <DialogTrigger asChild>
                               <Button
                                 variant="ghost"
-                                size="icon"
-                                className="text-red-600 bg-red-500/10 hover:bg-red-500/20 hover:text-red-700 h-9 w-9"
+                                size="sm"
+                                className="text-red-600 bg-red-500/10 hover:bg-red-500/20 hover:text-red-700 flex gap-1 items-center max-md:h-9 max-md:w-9 max-md:p-0 max-md:justify-center"
                               >
+                                <span className="hidden md:inline">Delete</span>
                                 <lord-icon
                                   src="https://cdn.lordicon.com/xyfswyxf.json"
                                   trigger="hover"
-                                  style={{ width: "22px", height: "22px" }}
+                                  style={{ width: "20px", height: "20px" }}
                                 ></lord-icon>
-
                               </Button>
                             </DialogTrigger>
 
