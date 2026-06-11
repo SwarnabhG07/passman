@@ -80,6 +80,11 @@ function App() {
 
 
   const onSubmit = (data: z.infer<typeof formSchema>) => {
+    if (!data.url.trim() && !data.username.trim() && !data.password.trim()) {
+      toast.error("Please fill in at least one field!");
+      return;
+    }
+
     const newSite = {
       id: selectedSite?.id || uuidv4(),
       ...data
