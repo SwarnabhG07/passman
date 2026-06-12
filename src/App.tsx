@@ -1,6 +1,7 @@
 import './App.css'
 import imgbg from '@/assets/imgbg.jpeg'
 import logo from '@/assets/logo.png'
+import githubLogo from '@/assets/2111432.png'
 import { useState } from 'react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -147,7 +148,10 @@ function App() {
     <Analytics />
       <div className="relative w-full h-screen overflow-hidden">
         <img src={imgbg} className='absolute inset-0 w-full h-full object-cover -z-10' alt="Background" />
-        <img src={logo} className="absolute top-1 left-3 h-6 md:h-8 object-contain z-10 mix-blend-multiply" alt="PassMan Logo" />
+        <img src={logo} className="absolute top-1.5 left-1 h-8 md:top-1 md:h-8 object-contain z-10 mix-blend-multiply" alt="PassMan Logo" />
+        <a href="https://github.com/SwarnabhG07/passman" target="_blank" rel="noreferrer" className="absolute top-1 right-3 z-10" title="View source on GitHub">
+          <img src={githubLogo} alt="GitHub" className="h-10 md:h-11 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity drop-shadow-sm" />
+        </a>
 
         <div className="flex items-center justify-center h-full transition-all duration-500 ease-in-out md:p-4 max-md:px-6 max-md:pt-[3rem] max-md:pb-6">
           <Card className="w-full h-full md:w-[90%] md:h-[90%] flex flex-col justify-between bg-white/20 backdrop-blur-lg border border-white/30 shadow-2xl p-2 transition-all duration-500 max-md:rounded-3xl">
