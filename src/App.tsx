@@ -1,5 +1,6 @@
 import './App.css'
 import imgbg from '@/assets/imgbg.jpeg'
+import logo from '@/assets/logo.png'
 import { useState } from 'react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -146,9 +147,7 @@ function App() {
     <Analytics />
       <div className="relative w-full h-screen overflow-hidden">
         <img src={imgbg} className='absolute inset-0 w-full h-full object-cover -z-10' alt="Background" />
-        <p className="absolute top-1 left-4 text-2xl font-bold tracking-widest text-black z-10">
-          PassMan.
-        </p>
+        <img src={logo} className="absolute top-1 left-3 h-6 md:h-8 object-contain z-10 mix-blend-multiply" alt="PassMan Logo" />
 
         <div className="flex items-center justify-center h-full transition-all duration-500 ease-in-out md:p-4 max-md:px-6 max-md:pt-[3rem] max-md:pb-6">
           <Card className="w-full h-full md:w-[90%] md:h-[90%] flex flex-col justify-between bg-white/20 backdrop-blur-lg border border-white/30 shadow-2xl p-2 transition-all duration-500 max-md:rounded-3xl">
