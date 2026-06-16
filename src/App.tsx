@@ -178,6 +178,7 @@ const [sessionKey, setSessionKey] = useState<CryptoKey | null>(null);
   // Master Password UI States
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [masterPasswordInput, setMasterPasswordInput] = useState("");
+  const [showMasterPassword, setShowMasterPassword] = useState(false);
   const isSetup = localStorage.getItem("passman_password_check") === null;
 
   const handleUnlock = async () => {
@@ -323,25 +324,29 @@ const [sessionKey, setSessionKey] = useState<CryptoKey | null>(null);
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4 pt-4 pb-2">
-            <Input 
-              type="password" 
-              placeholder="Enter Master Password" 
-              value={masterPasswordInput}
-              onChange={(e) => setMasterPasswordInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') handleUnlock() }}
-              className="bg-white/60 border-gray-200 focus-visible:ring-gray-400/30 text-lg tracking-widest h-11 placeholder:text-sm placeholder:tracking-normal w-full"
-            />
+            <div className="relative">
+              <Input 
+                type={showMasterPassword ? "text" : "password"} 
+                placeholder="Enter Master Password" 
+                value={masterPasswordInput}
+                onChange={(e) => setMasterPasswordInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleUnlock() }}
+                className="bg-white/60 border-gray-200 focus-visible:ring-gray-400/30 text-lg tracking-widest h-11 placeholder:text-sm placeholder:tracking-normal w-full pr-10"
+              />
+              <button
+                type="button"
+                onClick={() => setShowMasterPassword(!showMasterPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
+                {showMasterPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
             <Button 
               onClick={handleUnlock} 
               className="w-full h-11 text-base bg-gray-900 text-white hover:bg-gray-800 shadow-md rounded-xl"
             >
               {isSetup ? "Setup Vault" : "Unlock Vault"}
-              <lord-icon
-                src="https://cdn.lordicon.com/jxwksmzg.json"
-                trigger="hover"
-                colors="primary:#1f3f4f"
-                style={{ width: "22px", height: "22px", marginLeft: "4px" }}
-              ></lord-icon>
+              
             </Button>
           </div>
         </DialogContent>
@@ -349,7 +354,7 @@ const [sessionKey, setSessionKey] = useState<CryptoKey | null>(null);
 
       <div className="relative w-full h-screen overflow-hidden">
         <img src={imgbg} className='absolute inset-0 w-full h-full object-cover -z-10' alt="Background" />
-        <img src={logo} className="absolute top-1.5 left-1 h-8 md:top-1 md:h-8 object-contain z-10 " alt="PassMan Logo" />
+        <img src={logo} className="absolute top-1.5 left-1 h-10 md:top-1 md:h-10 object-contain z-10 " alt="PassMan Logo" />
         <a href="https://github.com/SwarnabhG07/passman" target="_blank" rel="noreferrer" className="absolute top-1 right-3 z-10" title="View source on GitHub">
           <img src={githubLogo} alt="GitHub" className="h-10 md:h-11 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity drop-shadow-sm" />
         </a>
