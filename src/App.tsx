@@ -28,7 +28,6 @@ import {
 } from "@/components/ui/dialog"
 import {
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -153,7 +152,7 @@ function App() {
           <img src={githubLogo} alt="GitHub" className="h-10 md:h-11 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity drop-shadow-sm" />
         </a>
 
-        <div className="flex items-center justify-center h-full transition-all duration-500 ease-in-out md:p-4 max-md:px-6 max-md:pt-[3rem] max-md:pb-6">
+        <div className="flex items-center justify-center h-full transition-all duration-500 ease-in-out md:p-4 max-md:px-6 max-md:pt-12 max-md:pb-6">
           <Card className="w-full h-full md:w-[90%] md:h-[90%] flex flex-col justify-between bg-white/20 backdrop-blur-lg border border-white/30 shadow-2xl p-2 transition-all duration-500 max-md:rounded-3xl">
 
             <CardHeader>
@@ -368,7 +367,7 @@ function App() {
                               </Button>
                             </DialogTrigger>
 
-                            <DialogContent className="bg-white/95 backdrop-blur-xl border-white/40 shadow-2xl sm:max-w-[425px]">
+                            <DialogContent className="bg-white/95 backdrop-blur-xl border-white/40 shadow-2xl sm:max-w-106.25">
                               <DialogHeader>
                                 <DialogTitle className="text-gray-900">Are you absolutely sure?</DialogTitle>
                                 <DialogDescription className="text-gray-600 pt-2">
