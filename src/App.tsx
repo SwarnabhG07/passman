@@ -55,7 +55,7 @@ const formSchema = z.object({
 function App() {
 
 
-const [sessionKey, setSessionKey] = useState(null);
+const [sessionKey, setSessionKey] = useState<CryptoKey | null>(null);
 
   // Helper to convert ArrayBuffer to Hex string
   function bufToHex(buffer: ArrayBuffer): string {
@@ -72,51 +72,63 @@ const [sessionKey, setSessionKey] = useState(null);
     return bytes.buffer;
   }
 
-  // Derive a CryptoKey from a secret key using SHA-256
-  async function getCryptoKey(passphrase: string): Promise<CryptoKey> {
+  // Derive a CryptoKey from a secret key using PBKDF2
+  async function getCryptoKey(passphrase: string, salt: Uint8Array): Promise<CryptoKey> {
     const enc = new TextEncoder();
-    const keyMaterial = enc.encode(passphrase);
-    const hash = await crypto.subtle.digest("SHA-256", keyMaterial);
-    return await crypto.subtle.importKey(
+    const keyMaterial = await crypto.subtle.importKey(
       "raw",
-      hash,
-      { name: "AES-CBC" },
+      enc.encode(passphrase),
+      { name: "PBKDF2" },
+      false,
+      ["deriveBits", "deriveKey"]
+    );
+    return crypto.subtle.deriveKey(
+      {
+        name: "PBKDF2",
+        salt: salt as unknown as BufferSource, 
+        iterations: 100000,
+        hash: "SHA-256"
+      },
+      keyMaterial,
+      { name: "AES-CBC", length: 256 },
       false,
       ["encrypt", "decrypt"]
     );
   }
 
   // Encrypt plaintext and return 'iv_hex:ciphertext_hex'
-  async function aesEncrypt(plaintext: string): Promise<string> {
+  async function aesEncrypt(plaintext: string, key?: CryptoKey): Promise<string> {
     try {
+      const activeKey = key || sessionKey;
+      if (!activeKey) throw new Error("No session key available for encryption");
       const ec = new TextEncoder();
-      const key = await getCryptoKey(SECRET_KEY);
       const iv = crypto.getRandomValues(new Uint8Array(16));
       const ciphertext = await crypto.subtle.encrypt(
         {
           name: 'AES-CBC',
           iv: iv as unknown as BufferSource,
         },
-        key,
+        activeKey,
         ec.encode(plaintext)
       );
       return `${bufToHex(iv.buffer)}:${bufToHex(ciphertext)}`;
     } catch (error) {
       console.error("Encryption error:", error);
-      return plaintext;
+      throw new Error("Failed to encrypt data");
     }
   }
 
   // Decrypt 'iv_hex:ciphertext_hex' to plaintext
-  async function aesDecrypt(encryptedStr: string): Promise<string> {
+  async function aesDecrypt(encryptedStr: string, key?: CryptoKey): Promise<string> {
     try {
+      const activeKey = key || sessionKey;
+      if (!activeKey) return encryptedStr;
       if (!encryptedStr || !encryptedStr.includes(':')) {
         return encryptedStr;
       }
       const [ivHex, ciphertextHex] = encryptedStr.split(':');
       if (!ivHex || !ciphertextHex) return encryptedStr;
 
-      const key = await getCryptoKey(SECRET_KEY);
       const iv = new Uint8Array(hexToBuf(ivHex));
       const ciphertext = hexToBuf(ciphertextHex);
 
@@ -125,14 +137,14 @@ const [sessionKey, setSessionKey] = useState(null);
           name: 'AES-CBC',
           iv: iv as unknown as BufferSource,
         },
-        key,
+        activeKey,
         ciphertext
       );
       const dec = new TextDecoder();
       return dec.decode(plaintext);
     } catch (error) {
       console.error("Decryption error:", error);
-      return encryptedStr;
+      return ""; 
     }
   }
   const getSiteName = (url: string) => {
@@ -166,14 +178,50 @@ const [sessionKey, setSessionKey] = useState(null);
   // Master Password UI States
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [masterPasswordInput, setMasterPasswordInput] = useState("");
+  const isSetup = localStorage.getItem("passman_password_check") === null;
 
-  const handleUnlock = () => {
-    // UI-only unlock flow (actual encryption key derivation will go here)
-    if (masterPasswordInput.trim().length > 0) {
-      setIsUnlocked(true);
-      toast.success("Vault Unlocked!");
-    } else {
-      toast.error("Please enter your Master Password.");
+  const handleUnlock = async () => {
+    if (masterPasswordInput.trim().length === 0) {
+      toast.error("Please enter a Master Password.");
+      return;
+    }
+    
+    try {
+      if (isSetup) {
+        // First time setup: Generate a random salt
+        const saltArray = crypto.getRandomValues(new Uint8Array(16));
+        const saltHex = bufToHex(saltArray.buffer);
+        localStorage.setItem("passman_salt", saltHex);
+
+        const derivedKey = await getCryptoKey(masterPasswordInput, saltArray);
+        const verifyString = await aesEncrypt("passman-verify", derivedKey);
+        localStorage.setItem("passman_password_check", verifyString);
+        setSessionKey(derivedKey);
+        setIsUnlocked(true);
+        setMasterPasswordInput("");
+        toast.success("Master Password configured!");
+      } else {
+        // Login: Retrieve the stored salt
+        const storedSaltHex = localStorage.getItem("passman_salt");
+        if (!storedSaltHex) throw new Error("Salt missing");
+        const saltArray = new Uint8Array(hexToBuf(storedSaltHex));
+
+        const derivedKey = await getCryptoKey(masterPasswordInput, saltArray);
+        const storedVerify = localStorage.getItem("passman_password_check");
+        if (!storedVerify) throw new Error("Verification string missing");
+        
+        const decrypted = await aesDecrypt(storedVerify, derivedKey);
+        if (decrypted === "passman-verify") {
+          setSessionKey(derivedKey);
+          setIsUnlocked(true);
+          setMasterPasswordInput("");
+          toast.success("Vault Unlocked!");
+        } else {
+          toast.error("Incorrect Master Password.");
+        }
+      }
+    } catch (e) {
+      toast.error("Incorrect Master Password.");
     }
   };
 
@@ -184,7 +232,15 @@ const [sessionKey, setSessionKey] = useState(null);
       return;
     }
 
-    const encryptedPassword = data.password ? await aesEncrypt(data.password) : "";
+    let encryptedPassword = "";
+    if (data.password) {
+      try {
+        encryptedPassword = await aesEncrypt(data.password);
+      } catch (e) {
+        toast.error("Critical Security Error: Failed to encrypt password. Save aborted.");
+        return;
+      }
+    }
 
     const newSite = {
       id: selectedSite?.id || uuidv4(),
@@ -230,10 +286,7 @@ const [sessionKey, setSessionKey] = useState(null);
   }, [selectedSite, form]);
 
   const CopyText = (text: string) => {
-    toast.success("Text Copied Succesfully!!", {
-      description: text,
-
-    })
+    toast.success("Text Copied Succesfully!!")
     navigator.clipboard.writeText(text);
   }
 
@@ -260,9 +313,13 @@ const [sessionKey, setSessionKey] = useState(null);
           className="sm:max-w-md bg-white/95 backdrop-blur-xl border-white/40 shadow-2xl rounded-3xl"
         >
           <DialogHeader>
-            <DialogTitle className="text-xl text-gray-900">Vault Locked</DialogTitle>
+            <DialogTitle className="text-xl text-gray-900">
+              {isSetup ? "Create Master Password" : "Vault Locked"}
+            </DialogTitle>
             <DialogDescription className="text-gray-600">
-              Please enter your Master Password to decrypt and access your credentials.
+              {isSetup 
+                ? "Set a Master Password to encrypt your credentials. You will need this to unlock your vault." 
+                : "Please enter your Master Password to decrypt and access your credentials."}
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4 pt-4 pb-2">
@@ -278,7 +335,7 @@ const [sessionKey, setSessionKey] = useState(null);
               onClick={handleUnlock} 
               className="w-full h-11 text-base bg-gray-900 text-white hover:bg-gray-800 shadow-md rounded-xl"
             >
-              Unlock Vault
+              {isSetup ? "Setup Vault" : "Unlock Vault"}
               <lord-icon
                 src="https://cdn.lordicon.com/jxwksmzg.json"
                 trigger="hover"
