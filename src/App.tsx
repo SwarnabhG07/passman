@@ -369,7 +369,7 @@ const [sessionKey, setSessionKey] = useState<CryptoKey | null>(null);
 
             <CardContent className="grow flex flex-col md:flex-row w-full h-full gap-3 overflow-y-auto md:overflow-hidden">
 
-              <div className={`flex flex-col h-full overflow-y-auto transition-all duration-500 ease-in-out pr-2 w-full order-2 md:order-1 ${selectedSite ? 'md:w-[55%]' : ''}`}>
+              <div className={`flex flex-col h-full transition-all duration-500 ease-in-out pr-2 w-full order-2 md:order-1 ${selectedSite ? 'md:w-[55%]' : ''}`}>
                 <div className="flex justify-end mb-2 shrink-0 pr-1">
                   <Button onClick={() => setSelectedSite({ id: uuidv4(), url: '', username: '' })}
                     size="icon"
@@ -385,7 +385,8 @@ const [sessionKey, setSessionKey] = useState<CryptoKey | null>(null);
                   </Button>
                 </div>
 
-                {sites.map((site) => (
+                <div className="flex-1 overflow-y-auto pr-2 pb-2">
+                  {sites.map((site) => (
                   <div
                     key={site.id}
                     onClick={() => setSelectedSite(site)}
@@ -414,6 +415,7 @@ const [sessionKey, setSessionKey] = useState<CryptoKey | null>(null);
 
                   </div>
                 ))}
+                </div>
               </div>
 
               {selectedSite && (
