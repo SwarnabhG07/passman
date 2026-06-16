@@ -13,6 +13,7 @@ import { Toaster } from "sonner"
 import * as z from "zod"
 import { Copy, Eye, EyeOff } from "lucide-react"
 import { v4 as uuidv4 } from "uuid";
+const crypto = globalThis.crypto;
 import { Analytics } from '@vercel/analytics/react';
 
 
@@ -52,6 +53,87 @@ const formSchema = z.object({
 })
 
 function App() {
+
+  const SECRET_KEY = import.meta.env.VITE_SECRET_KEY || "passman-default-secure-master-key-phrase";
+
+  // Helper to convert ArrayBuffer to Hex string
+  function bufToHex(buffer: ArrayBuffer): string {
+    return Array.prototype.map.call(new Uint8Array(buffer), (x: number) => ('00' + x.toString(16)).slice(-2)).join('');
+  }
+
+  // Helper to convert Hex string to ArrayBuffer
+  function hexToBuf(hex: string): ArrayBuffer {
+    if (hex.length % 2 !== 0) return new ArrayBuffer(0);
+    const bytes = new Uint8Array(hex.length / 2);
+    for (let i = 0; i < bytes.length; i++) {
+      bytes[i] = parseInt(hex.substring(i * 2, i * 2 + 2), 16);
+    }
+    return bytes.buffer;
+  }
+
+  // Derive a CryptoKey from a secret key using SHA-256
+  async function getCryptoKey(passphrase: string): Promise<CryptoKey> {
+    const enc = new TextEncoder();
+    const keyMaterial = enc.encode(passphrase);
+    const hash = await crypto.subtle.digest("SHA-256", keyMaterial);
+    return await crypto.subtle.importKey(
+      "raw",
+      hash,
+      { name: "AES-CBC" },
+      false,
+      ["encrypt", "decrypt"]
+    );
+  }
+
+  // Encrypt plaintext and return 'iv_hex:ciphertext_hex'
+  async function aesEncrypt(plaintext: string): Promise<string> {
+    try {
+      const ec = new TextEncoder();
+      const key = await getCryptoKey(SECRET_KEY);
+      const iv = crypto.getRandomValues(new Uint8Array(16));
+      const ciphertext = await crypto.subtle.encrypt(
+        {
+          name: 'AES-CBC',
+          iv: iv as unknown as BufferSource,
+        },
+        key,
+        ec.encode(plaintext)
+      );
+      return `${bufToHex(iv.buffer)}:${bufToHex(ciphertext)}`;
+    } catch (error) {
+      console.error("Encryption error:", error);
+      return plaintext;
+    }
+  }
+
+  // Decrypt 'iv_hex:ciphertext_hex' to plaintext
+  async function aesDecrypt(encryptedStr: string): Promise<string> {
+    try {
+      if (!encryptedStr || !encryptedStr.includes(':')) {
+        return encryptedStr;
+      }
+      const [ivHex, ciphertextHex] = encryptedStr.split(':');
+      if (!ivHex || !ciphertextHex) return encryptedStr;
+
+      const key = await getCryptoKey(SECRET_KEY);
+      const iv = new Uint8Array(hexToBuf(ivHex));
+      const ciphertext = hexToBuf(ciphertextHex);
+
+      const plaintext = await crypto.subtle.decrypt(
+        {
+          name: 'AES-CBC',
+          iv: iv as unknown as BufferSource,
+        },
+        key,
+        ciphertext
+      );
+      const dec = new TextDecoder();
+      return dec.decode(plaintext);
+    } catch (error) {
+      console.error("Decryption error:", error);
+      return encryptedStr;
+    }
+  }
   const getSiteName = (url: string) => {
     if (!url) return "New Site";
     try {
@@ -81,15 +163,19 @@ function App() {
   const [showPassword, setShowPassword] = useState(false);
 
 
-  const onSubmit = (data: z.infer<typeof formSchema>) => {
+  const onSubmit = async (data: z.infer<typeof formSchema>) => {
     if (!data.url.trim() && !data.username.trim() && !data.password.trim()) {
       toast.error("Please fill in at least one field!");
       return;
     }
 
+    const encryptedPassword = data.password ? await aesEncrypt(data.password) : "";
+
     const newSite = {
       id: selectedSite?.id || uuidv4(),
-      ...data
+      url: data.url,
+      username: data.username,
+      password: encryptedPassword,
     };
 
     let updatedSites;
@@ -103,7 +189,7 @@ function App() {
     localStorage.setItem("passman_sites", JSON.stringify(updatedSites));
 
     toast.success("Credentials saved!");
-    setSelectedSite(null); 
+    setSelectedSite(null);
   };
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -115,20 +201,24 @@ function App() {
     },
   });
   React.useEffect(() => {
-    if (selectedSite) {
-      form.reset({
-        url: selectedSite.url || "",
-        username: selectedSite.username || "",
-        password: selectedSite.password || ""
-      });
-    }
+    const resetForm = async () => {
+      if (selectedSite) {
+        const decryptedPassword = selectedSite.password ? await aesDecrypt(selectedSite.password) : "";
+        form.reset({
+          url: selectedSite.url || "",
+          username: selectedSite.username || "",
+          password: decryptedPassword
+        });
+      }
+    };
+    resetForm();
   }, [selectedSite, form]);
 
   const CopyText = (text: string) => {
     toast.success("Text Copied Succesfully!!", {
-          description: text,
-          
-        })
+      description: text,
+
+    })
     navigator.clipboard.writeText(text);
   }
 
@@ -143,8 +233,8 @@ function App() {
 
   return (
     <>
-    <Toaster position="top-right" />
-    <Analytics />
+      <Toaster position="top-right" />
+      <Analytics />
       <div className="relative w-full h-screen overflow-hidden">
         <img src={imgbg} className='absolute inset-0 w-full h-full object-cover -z-10' alt="Background" />
         <img src={logo} className="absolute top-1.5 left-1 h-8 md:top-1 md:h-8 object-contain z-10 mix-blend-multiply" alt="PassMan Logo" />
@@ -277,7 +367,7 @@ function App() {
                         />
 
                         <Button
-                        onClick={() => CopyText(form.getValues("url"))}
+                          onClick={() => CopyText(form.getValues("url"))}
                           type="button"
                           size="icon"
                           className="h-9 w-9 shrink-0 bg-black hover:bg-gray-800 shadow-sm rounded-md"
@@ -320,21 +410,21 @@ function App() {
 
                       <div className="flex items-center gap-2">
 
-                      <div className="relative w-full">
-                        <Input
-                          type={showPassword ? "text" : "password"}
-                          {...form.register("password")}
-                          placeholder="Enter password"
-                          className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm text-lg tracking-widest h-9 placeholder:text-sm placeholder:tracking-normal w-full pr-9"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800 transition-colors"
-                        >
-                          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                        </button>
-                      </div>
+                        <div className="relative w-full">
+                          <Input
+                            type={showPassword ? "text" : "password"}
+                            {...form.register("password")}
+                            placeholder="Enter password"
+                            className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm text-lg tracking-widest h-9 placeholder:text-sm placeholder:tracking-normal w-full pr-9"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800 transition-colors"
+                          >
+                            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                          </button>
+                        </div>
 
                         <Button onClick={() => CopyText(form.getValues("password"))}
                           type="button"
