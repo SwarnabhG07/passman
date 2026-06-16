@@ -501,6 +501,12 @@ function App() {
 
                         <Input
                           {...form.register("url")}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              form.setFocus("username");
+                            }
+                          }}
                           placeholder="https://example.com"
                           className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm h-9 text-sm w-full"
                         />
@@ -526,6 +532,12 @@ function App() {
 
                         <Input
                           {...form.register("username")}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault();
+                              form.setFocus("password");
+                            }
+                          }}
                           placeholder="user@example.com"
                           className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm h-9 text-sm w-full"
                         />
@@ -553,6 +565,12 @@ function App() {
                           <Input
                             type={showPassword ? "text" : "password"}
                             {...form.register("password")}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                form.handleSubmit(onSubmit)();
+                              }
+                            }}
                             placeholder="Enter password"
                             className="bg-white/60 border-white/50 focus-visible:ring-gray-400/30 shadow-sm text-lg tracking-widest h-9 placeholder:text-sm placeholder:tracking-normal w-full pr-9"
                           />
