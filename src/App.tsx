@@ -55,7 +55,7 @@ const formSchema = z.object({
 function App() {
 
 
-const [sessionKey, setSessionKey] = useState<CryptoKey | null>(null);
+  const [sessionKey, setSessionKey] = useState<CryptoKey | null>(null);
 
   // Helper to convert ArrayBuffer to Hex string
   function bufToHex(buffer: ArrayBuffer): string {
@@ -85,7 +85,7 @@ const [sessionKey, setSessionKey] = useState<CryptoKey | null>(null);
     return crypto.subtle.deriveKey(
       {
         name: "PBKDF2",
-        salt: salt as unknown as BufferSource, 
+        salt: salt as unknown as BufferSource,
         iterations: 100000,
         hash: "SHA-256"
       },
@@ -144,7 +144,7 @@ const [sessionKey, setSessionKey] = useState<CryptoKey | null>(null);
       return dec.decode(plaintext);
     } catch (error) {
       console.error("Decryption error:", error);
-      return ""; 
+      return "";
     }
   }
   const getSiteName = (url: string) => {
@@ -186,7 +186,7 @@ const [sessionKey, setSessionKey] = useState<CryptoKey | null>(null);
       toast.error("Please enter a Master Password.");
       return;
     }
-    
+
     try {
       if (isSetup) {
         // First time setup: Generate a random salt
@@ -210,7 +210,7 @@ const [sessionKey, setSessionKey] = useState<CryptoKey | null>(null);
         const derivedKey = await getCryptoKey(masterPasswordInput, saltArray);
         const storedVerify = localStorage.getItem("passman_password_check");
         if (!storedVerify) throw new Error("Verification string missing");
-        
+
         const decrypted = await aesDecrypt(storedVerify, derivedKey);
         if (decrypted === "passman-verify") {
           setSessionKey(derivedKey);
@@ -307,9 +307,9 @@ const [sessionKey, setSessionKey] = useState<CryptoKey | null>(null);
 
       {/* Lock Screen Dialog */}
       <Dialog open={!isUnlocked}>
-        <DialogContent 
-          onPointerDownOutside={(e) => e.preventDefault()} 
-          onEscapeKeyDown={(e) => e.preventDefault()} 
+        <DialogContent
+          onPointerDownOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
           showCloseButton={false}
           className="sm:max-w-md bg-white/95 backdrop-blur-xl border-white/40 shadow-2xl rounded-3xl"
         >
@@ -318,16 +318,16 @@ const [sessionKey, setSessionKey] = useState<CryptoKey | null>(null);
               {isSetup ? "Create Master Password" : "Vault Locked"}
             </DialogTitle>
             <DialogDescription className="text-gray-600">
-              {isSetup 
-                ? "Set a Master Password to encrypt your credentials. You will need this to unlock your vault." 
+              {isSetup
+                ? "Set a Master Password to encrypt your credentials. You will need this to unlock your vault."
                 : "Please enter your Master Password to decrypt and access your credentials."}
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-4 pt-4 pb-2">
             <div className="relative">
-              <Input 
-                type={showMasterPassword ? "text" : "password"} 
-                placeholder="Enter Master Password" 
+              <Input
+                type={showMasterPassword ? "text" : "password"}
+                placeholder="Enter Master Password"
                 value={masterPasswordInput}
                 onChange={(e) => setMasterPasswordInput(e.target.value)}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleUnlock() }}
@@ -341,12 +341,12 @@ const [sessionKey, setSessionKey] = useState<CryptoKey | null>(null);
                 {showMasterPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
-            <Button 
-              onClick={handleUnlock} 
+            <Button
+              onClick={handleUnlock}
               className="w-full h-11 text-base bg-gray-900 text-white hover:bg-gray-800 shadow-md rounded-xl"
             >
               {isSetup ? "Setup Vault" : "Unlock Vault"}
-              
+
             </Button>
           </div>
         </DialogContent>
@@ -365,8 +365,15 @@ const [sessionKey, setSessionKey] = useState<CryptoKey | null>(null);
             <CardHeader>
               <div className="flex justify-between items-start">
                 <div>
-                  <CardTitle className="text-2xl text-gray-900">All Keys</CardTitle>
-                  <CardDescription className="text-gray-800">{sites.length}</CardDescription>
+                  <CardTitle className="text-2xl text-gray-900 flex items-center gap-2">
+                    My Vault 
+                    <lord-icon
+                      src="https://cdn.lordicon.com/piurhpdv.json"
+                      trigger="hover"
+                      style={{ width: '30px', height: '30px' }}
+                    />
+                  </CardTitle>
+                  <CardDescription className="text-gray-800">Total Sites: {sites.length}</CardDescription>
                 </div>
                 {/* <CardAction>Card Action</CardAction> */}
               </div>
@@ -391,35 +398,48 @@ const [sessionKey, setSessionKey] = useState<CryptoKey | null>(null);
                 </div>
 
                 <div className="flex-1 overflow-y-auto pr-2 pb-2">
-                  {sites.map((site) => (
-                  <div
-                    key={site.id}
-                    onClick={() => setSelectedSite(site)}
-                    className="flex items-center gap-3 border border-gray-200 bg-white/40 p-4 rounded-xl mb-3 cursor-pointer hover:bg-white/70 transition-colors shadow-sm"
-                  >
-
-                    {/* 2. The Favicon Container */}
-                    <div className="w-10 h-10 shrink-0 rounded-full bg-white flex items-center justify-center shadow-sm overflow-hidden border border-gray-100">
-                      {getDomain(site.url) ? (
-                        <img
-                          src={`https://www.google.com/s2/favicons?domain=${getDomain(site.url)}&sz=128`}
-                          alt="logo"
-                          className="w-5 h-5 object-contain"
-                        />
-                      ) : (
-                        <span className="text-lg">🌍</span>
-                      )}
+                  {sites.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center text-gray-500 opacity-80 pt-10 pb-4">
+                      <lord-icon
+                        src="https://cdn.lordicon.com/msoeawqm.json"
+                        trigger="loop"
+                        delay="2000"
+                        colors="primary:#4b5563,secondary:#4b5563"
+                        style={{ width: "50px", height: "50px" }}>
+                      </lord-icon>
+                      <p className="mt-2 text-sm font-medium">No Sites Added</p>
                     </div>
+                  ) : (
+                    sites.map((site) => (
+                      <div
+                        key={site.id}
+                        onClick={() => setSelectedSite(site)}
+                        className="flex items-center gap-3 border border-gray-200 bg-white/40 p-4 rounded-xl mb-3 cursor-pointer hover:bg-white/70 transition-colors shadow-sm"
+                      >
 
-                    {/* 3. The Text Container */}
+                        {/* 2. The Favicon Container */}
+                        <div className="w-10 h-10 shrink-0 rounded-full bg-white flex items-center justify-center shadow-sm overflow-hidden border border-gray-100">
+                          {getDomain(site.url) ? (
+                            <img
+                              src={`https://www.google.com/s2/favicons?domain=${getDomain(site.url)}&sz=128`}
+                              alt="logo"
+                              className="w-5 h-5 object-contain"
+                            />
+                          ) : (
+                            <span className="text-lg">🌍</span>
+                          )}
+                        </div>
 
-                    <div className="flex flex-col overflow-hidden">
-                      <p className="font-bold text-gray-900 truncate">{getSiteName(site.url)}</p>
-                      <p className="text-sm text-gray-700 truncate">{site.username}</p>
-                    </div>
+                        {/* 3. The Text Container */}
 
-                  </div>
-                ))}
+                        <div className="flex flex-col overflow-hidden">
+                          <p className="font-bold text-gray-900 truncate">{getSiteName(site.url)}</p>
+                          <p className="text-sm text-gray-700 truncate">{site.username}</p>
+                        </div>
+
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
 
