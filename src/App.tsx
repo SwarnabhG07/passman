@@ -1,5 +1,5 @@
 import './App.css'
-import imgbg from '@/assets/imgbg.jpeg'
+import imgbg from '@/assets/abstract-beige-luxury-wave-background-with-gold-lines-elegant-cream-gradient-design-for-beauty-products-invitation-templates-banners-sales-awards-events-websites-and-pages-vector.jpg'
 import logo from '@/assets/logo.png'
 import githubLogo from '@/assets/2111432.png'
 import { useState } from 'react'
