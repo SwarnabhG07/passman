@@ -54,7 +54,8 @@ const formSchema = z.object({
 
 function App() {
 
-  const SECRET_KEY = import.meta.env.VITE_SECRET_KEY || "passman-default-secure-master-key-phrase";
+
+const [sessionKey, setSessionKey] = useState(null);
 
   // Helper to convert ArrayBuffer to Hex string
   function bufToHex(buffer: ArrayBuffer): string {
@@ -162,6 +163,20 @@ function App() {
   const [selectedSite, setSelectedSite] = useState<Site | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
+  // Master Password UI States
+  const [isUnlocked, setIsUnlocked] = useState(false);
+  const [masterPasswordInput, setMasterPasswordInput] = useState("");
+
+  const handleUnlock = () => {
+    // UI-only unlock flow (actual encryption key derivation will go here)
+    if (masterPasswordInput.trim().length > 0) {
+      setIsUnlocked(true);
+      toast.success("Vault Unlocked!");
+    } else {
+      toast.error("Please enter your Master Password.");
+    }
+  };
+
 
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     if (!data.url.trim() && !data.username.trim() && !data.password.trim()) {
@@ -235,15 +250,55 @@ function App() {
     <>
       <Toaster position="top-right" />
       <Analytics />
+
+      {/* Lock Screen Dialog */}
+      <Dialog open={!isUnlocked}>
+        <DialogContent 
+          onPointerDownOutside={(e) => e.preventDefault()} 
+          onEscapeKeyDown={(e) => e.preventDefault()} 
+          showCloseButton={false}
+          className="sm:max-w-md bg-white/95 backdrop-blur-xl border-white/40 shadow-2xl rounded-3xl"
+        >
+          <DialogHeader>
+            <DialogTitle className="text-xl text-gray-900">Vault Locked</DialogTitle>
+            <DialogDescription className="text-gray-600">
+              Please enter your Master Password to decrypt and access your credentials.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 pt-4 pb-2">
+            <Input 
+              type="password" 
+              placeholder="Enter Master Password" 
+              value={masterPasswordInput}
+              onChange={(e) => setMasterPasswordInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') handleUnlock() }}
+              className="bg-white/60 border-gray-200 focus-visible:ring-gray-400/30 text-lg tracking-widest h-11 placeholder:text-sm placeholder:tracking-normal w-full"
+            />
+            <Button 
+              onClick={handleUnlock} 
+              className="w-full h-11 text-base bg-gray-900 text-white hover:bg-gray-800 shadow-md rounded-xl"
+            >
+              Unlock Vault
+              <lord-icon
+                src="https://cdn.lordicon.com/jxwksmzg.json"
+                trigger="hover"
+                colors="primary:#1f3f4f"
+                style={{ width: "22px", height: "22px", marginLeft: "4px" }}
+              ></lord-icon>
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <div className="relative w-full h-screen overflow-hidden">
         <img src={imgbg} className='absolute inset-0 w-full h-full object-cover -z-10' alt="Background" />
-        <img src={logo} className="absolute top-1.5 left-1 h-8 md:top-1 md:h-8 object-contain z-10 mix-blend-multiply" alt="PassMan Logo" />
+        <img src={logo} className="absolute top-1.5 left-1 h-8 md:top-1 md:h-8 object-contain z-10 " alt="PassMan Logo" />
         <a href="https://github.com/SwarnabhG07/passman" target="_blank" rel="noreferrer" className="absolute top-1 right-3 z-10" title="View source on GitHub">
           <img src={githubLogo} alt="GitHub" className="h-10 md:h-11 w-auto object-contain opacity-70 hover:opacity-100 transition-opacity drop-shadow-sm" />
         </a>
 
         <div className="flex items-center justify-center h-full transition-all duration-500 ease-in-out md:p-4 max-md:px-6 max-md:pt-12 max-md:pb-6">
-          <Card className="w-full h-full md:w-[90%] md:h-[90%] flex flex-col justify-between bg-white/20 backdrop-blur-lg border border-white/30 shadow-2xl p-2 transition-all duration-500 max-md:rounded-3xl">
+          <Card className="w-full h-full md:w-[90%] md:h-[90%] flex flex-col justify-between bg-white/20 backdrop-blur-lg border border-white/30 shadow-2xl p-2 transition-all duration-500 max-md:rounded-3xl transform-gpu backface-hidden">
 
             <CardHeader>
               <div className="flex justify-between items-start">
