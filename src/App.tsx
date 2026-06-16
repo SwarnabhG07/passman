@@ -311,7 +311,7 @@ function App() {
           onPointerDownOutside={(e) => e.preventDefault()}
           onEscapeKeyDown={(e) => e.preventDefault()}
           showCloseButton={false}
-          className="sm:max-w-md bg-white/95 backdrop-blur-xl border-white/40 shadow-2xl rounded-3xl"
+          className="sm:max-w-md bg-white/95 backdrop-blur-xl border-white/40 shadow-2xl rounded-3xl max-sm:top-[20%] max-sm:translate-y-0"
         >
           <DialogHeader>
             <DialogTitle className="text-xl text-gray-900">
@@ -614,7 +614,7 @@ function App() {
                               </Button>
                             </DialogTrigger>
 
-                            <DialogContent className="bg-white/95 backdrop-blur-xl border-white/40 shadow-2xl sm:max-w-106.25">
+                            <DialogContent className="bg-white/95 backdrop-blur-xl border-white/40 shadow-2xl sm:max-w-106.25 max-sm:top-[20%] max-sm:translate-y-0">
                               <DialogHeader>
                                 <DialogTitle className="text-gray-900">Are you absolutely sure?</DialogTitle>
                                 <DialogDescription className="text-gray-600 pt-2">
