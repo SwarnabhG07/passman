@@ -1,73 +1,41 @@
-# React + TypeScript + Vite
+# 🔐 PassMan
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+**PassMan** is a secure, client-side password manager built with modern web technologies. It features a stunning glassmorphism UI, zero-knowledge architecture, and blazing-fast performance.
 
-Currently, two official plugins are available:
+## ✨ Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Robust Encryption:** Utilizes the native Web Crypto API with PBKDF2 key derivation (100,000 iterations) and AES-CBC encryption.
+- **Zero-Knowledge Architecture:** Your master password and session keys are never saved to disk. All credentials stay strictly encrypted in your local browser storage.
+- **Beautiful UI/UX:** A fully responsive, modern glassmorphism design powered by Tailwind CSS and Radix UI primitives.
+- **Keyboard Navigation:** Fully keyboard-accessible form inputs for rapid credential entry.
+- **Copy to Clipboard:** One-click copy functionality for your usernames, URLs, and passwords.
 
-## React Compiler
+## 🚀 Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Framework:** React 19 + TypeScript + Vite
+- **UI Components:** Shadcn UI + Radix UI Primitives
+- **Styling:** Tailwind CSS + `tailwind-merge` + `clsx`
+- **State & Forms:** React Hook Form + Zod Validation
+- **Icons & Animations:** Lucide React & LordIcon
+- **Utilities:** `uuid` (unique ID generation), `sonner` (toast notifications)
+- **Cryptography:** Native Web Crypto API
 
-## Expanding the ESLint configuration
+## 📦 Installation & Setup
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+2. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+3. Open your browser to `http://localhost:5173`.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🔒 Security Notice
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+**PassMan is entirely local.** 
+There is no backend server or cloud sync. If you clear your browser's `localStorage` or forget your Master Password, **your credentials cannot be recovered.** The cryptographic design ensures that without the exact Master Password and the dynamic salt, the ciphertext is mathematically impossible to decrypt.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
+*Built with ❤️ using React, Tailwind CSS, and the Web Crypto API.*
